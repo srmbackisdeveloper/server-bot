@@ -3,8 +3,6 @@ package server
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
-	"log"
 	"net/http"
 	"os"
 	"server-bot/internal/functionalities"
@@ -39,16 +37,8 @@ func (s *Server) GetProductHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) AddProductHandler(w http.ResponseWriter, r *http.Request) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
-
-	//
-	// Retrieve the password from the query parameters
 	providedPassword := r.URL.Query().Get("p")
 
-	// Check if the provided password matches the predefined password
 	if providedPassword != os.Getenv("ACCESS_PASSWORD") {
 		functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Unauthorized"})
 		return
@@ -62,7 +52,7 @@ func (s *Server) AddProductHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.db.AddProduct(newProd)
+	err := s.db.AddProduct(newProd)
 	if err != nil {
 		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: err.Error()})
 		return
