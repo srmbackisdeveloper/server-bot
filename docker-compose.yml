@@ -1,15 +1,21 @@
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+  server-bot:
+    build: ./
+    command: ./
     ports:
-      - "${DB_PORT}:27017"
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - PORT=8080
+  db:
+    restart: always
+    image: postgres:latest
     volumes:
-      - mongo_volume:/data/db
-
-volumes:
-  mongo_volume:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - PASS=necompanydevteampassword
+    ports:
+      - "5437:5432"  # Changed from 5436 to 5437

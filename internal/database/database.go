@@ -1,53 +1,53 @@
 package database
 
 import (
-	"context"
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"time"
+	"server-bot/internal/models"
 
 	_ "github.com/joho/godotenv/autoload"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Service interface {
 	Health() map[string]string
+
+	GetAllProducts() ([]*models.Product, error)
+	GetProduct(uint) (*models.Product, error)
+	AddProduct(*models.Product) error
 }
 
 type service struct {
-	db *mongo.Client
+	db *gorm.DB
 }
-
-var (
-	host = os.Getenv("DB_HOST")
-	port = os.Getenv("DB_PORT")
-	//database = os.Getenv("DB_DATABASE")
-)
 
 func New() Service {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
-
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal(err)
-
+		log.Fatalf("Error loading .env file: %v", err)
 	}
-	return &service{
-		db: client,
-	}
-}
 
-func (s *service) Health() map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
 
-	err := s.db.Ping(ctx, nil)
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/railway", dbUser, dbPassword, dbHost, dbPort)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		log.Fatalf("failed to connect database: %v", err)
 	}
 
-	return map[string]string{
-		"message": "It's healthy",
+	log.Printf("The database connection established successfully: %s:%s", dbUser, dbHost)
+
+	err = db.AutoMigrate(&models.Product{})
+	if err != nil {
+		log.Fatalf("failed to auto migrate: %v", err)
 	}
+
+	return &service{db: db}
 }

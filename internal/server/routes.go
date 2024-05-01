@@ -2,32 +2,20 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", s.HelloWorldHandler)
-
-	r.HandleFunc("/health", s.healthHandler)
+	r.HandleFunc("/health", s.healthHandler).Methods("GET")
+	r.HandleFunc("/products", s.GetAllProductsHandler).Methods("GET")
+	r.HandleFunc("/products/{id}", s.GetProductHandler).Methods("GET")
+	r.HandleFunc("/products", s.AddProductHandler).Methods("POST")
 
 	return r
-}
-
-func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
-	resp := make(map[string]string)
-	resp["message"] = "Hello World"
-
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		log.Fatalf("error handling JSON marshal. Err: %v", err)
-	}
-
-	_, _ = w.Write(jsonResp)
 }
 
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +24,5 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
 	}
-
 	_, _ = w.Write(jsonResp)
 }
