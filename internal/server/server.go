@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -26,7 +27,7 @@ type APISuccessMessage struct {
 }
 
 func NewServer() *http.Server {
-	port, err := strconv.Atoi("8080")
+	port, err := strconv.Atoi(os.Getenv("PORT"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,6 +45,6 @@ func NewServer() *http.Server {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	log.Printf("server running on port: %v\n", port)
+	log.Printf("server running on: %v\n", server.Addr)
 	return server
 }
