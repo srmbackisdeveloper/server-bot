@@ -17,6 +17,8 @@ type Service interface {
 	GetAllProducts() ([]*models.Product, error)
 	GetProduct(uint) (*models.Product, error)
 	AddProduct(*models.Product) error
+	DeleteProduct(uint) error
+	UpdateProduct(uint, *models.Product) error
 }
 
 type service struct {

@@ -10,10 +10,13 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/health", s.healthHandler).Methods("GET")
+	r.HandleFunc("", s.healthHandler).Methods("GET")
+
 	r.HandleFunc("/products", s.GetAllProductsHandler).Methods("GET")
 	r.HandleFunc("/products/{id}", s.GetProductHandler).Methods("GET")
 	r.HandleFunc("/products", s.AddProductHandler).Methods("POST")
+	r.HandleFunc("/products/{id}", s.DeleteProductHandler).Methods("DELETE")
+	r.HandleFunc("/products/{id}", s.UpdateProductHandler).Methods("PUT")
 
 	return r
 }

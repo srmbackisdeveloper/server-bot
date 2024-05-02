@@ -52,3 +52,30 @@ func (s *service) AddProduct(prod *models.Product) error {
 
 	return nil
 }
+
+func (s *service) DeleteProduct(id uint) error {
+	result := s.db.Delete(&models.Product{}, id)
+	if result.Error != nil {
+		log.Printf("Error deleting product: %v\n", result.Error)
+		return result.Error
+	}
+
+	return nil
+}
+
+func (s *service) UpdateProduct(id uint, prod *models.Product) error {
+	var existingProduct models.Product
+	result := s.db.First(&existingProduct, id)
+	if result.Error != nil {
+		log.Printf("Error finding product: %v\n", result.Error)
+		return result.Error
+	}
+
+	result = s.db.Model(&existingProduct).Updates(prod)
+	if result.Error != nil {
+		log.Printf("Error updating product: %v\n", result.Error)
+		return result.Error
+	}
+
+	return nil
+}

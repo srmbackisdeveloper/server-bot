@@ -60,3 +60,57 @@ func (s *Server) AddProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	functionalities.WriteJSON(w, http.StatusOK, APISuccessMessage{Message: "Product added successfully!"})
 }
+
+func (s *Server) DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
+	providedPassword := r.URL.Query().Get("p")
+
+	if providedPassword != os.Getenv("ACCESS_PASSWORD") {
+		functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Unauthorized"})
+		return
+	}
+
+	idString := mux.Vars(r)["id"] // get ID
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: "invalid id"})
+		return
+	}
+
+	err = s.db.DeleteProduct(uint(id))
+	if err != nil {
+		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: err.Error()})
+		return
+	}
+
+	functionalities.WriteJSON(w, http.StatusOK, APISuccessMessage{Message: "Product deleted successfully!"})
+}
+
+func (s *Server) UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
+	providedPassword := r.URL.Query().Get("p")
+
+	if providedPassword != os.Getenv("ACCESS_PASSWORD") {
+		functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Unauthorized"})
+		return
+	}
+
+	idString := mux.Vars(r)["id"] // get ID from URL
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: "Invalid ID format"})
+		return
+	}
+
+	var updateProduct models.Product
+	if err := json.NewDecoder(r.Body).Decode(&updateProduct); err != nil {
+		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: "Error decoding request body"})
+		return
+	}
+
+	err = s.db.UpdateProduct(uint(id), &updateProduct)
+	if err != nil {
+		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: err.Error()})
+		return
+	}
+
+	functionalities.WriteJSON(w, http.StatusOK, APISuccessMessage{Message: "Product updated successfully!"})
+}
