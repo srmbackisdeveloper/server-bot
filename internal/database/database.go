@@ -19,6 +19,15 @@ type Service interface {
 	AddProduct(*models.Product) error
 	DeleteProduct(uint) error
 	UpdateProduct(uint, *models.Product) error
+
+	GetUser(uint) (*models.User, error)
+	GetAllUsers() ([]*models.User, error)
+
+	// Auth
+	GetUserByEmail(string) (*models.User, error)
+	RegisterUser(string) (*models.User, error)
+	UpdateUserVerificationCode(*models.User) error
+	ActivateUser(*models.User) error
 }
 
 type service struct {
@@ -40,7 +49,7 @@ func New() Service {
 
 	log.Printf("The database connection established successfully: %s:%s", dbUser, dbHost)
 
-	err = db.AutoMigrate(&models.Product{})
+	err = db.AutoMigrate(&models.Product{}, &models.User{}, &models.Address{})
 	if err != nil {
 		log.Fatalf("failed to auto migrate: %v", err)
 	}

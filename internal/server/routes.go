@@ -17,7 +17,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.HandleFunc("/products", s.AddProductHandler).Methods("POST")           // S
 	r.HandleFunc("/products/{id}", s.DeleteProductHandler).Methods("DELETE") // S
 	r.HandleFunc("/products/{id}", s.UpdateProductHandler).Methods("PUT")    // S
+	r.HandleFunc("/user", s.GetUserHandler).Methods("GET")                   // S
+	r.HandleFunc("/user/{id}", s.GetAllUsersHandler).Methods("GET")          // S
 
+	r.HandleFunc("/auth", s.AuthHandler).Methods("POST")
+	r.HandleFunc("/verify", s.AuthVerifyHandler).Methods("POST")
 	return r
 }
 
