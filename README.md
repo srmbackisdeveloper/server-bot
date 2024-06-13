@@ -1,17 +1,12 @@
-# Project server-bot
+# Overview
 
-One Paragraph of project description goes here
+The server made for bot support. 
 
-## Getting Started
+## Instructions
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+The project is on the implementation step. Further instructions will be provided soon.
 
 ## MakeFile
-
-run all make commands with clean tests
-```bash
-make all build
-```
 
 build the application
 ```bash
@@ -23,27 +18,12 @@ run the application
 make run
 ```
 
-Create DB container
-```bash
-make docker-run
-```
 
-Shutdown DB container
-```bash
-make docker-down
-```
+## Authors
 
-live reload the application
-```bash
-make watch
-```
+- Syrymbek
+- Nurbol
+- Baidibek
 
-run the test suite
-```bash
-make test
-```
 
-clean up binary from the last build
-```bash
-make clean
-```
+All rights are preserved.

@@ -28,6 +28,9 @@ type Service interface {
 	RegisterUser(string) (*models.User, error)
 	UpdateUserVerificationCode(*models.User) error
 	ActivateUser(*models.User) error
+
+	// token
+	GetUserByToken(string) (*models.User, error)
 }
 
 type service struct {
@@ -40,7 +43,7 @@ func New() Service {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/railway", dbUser, dbPassword, dbHost, dbPort)
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/postgres", dbUser, dbPassword, dbHost, dbPort)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

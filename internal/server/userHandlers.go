@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
 	"server-bot/internal/functionalities"
@@ -22,12 +21,7 @@ func (s *Server) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, "Failed to serialize user", http.StatusInternalServerError)
-		return
-	}
-	functionalities.WriteJSON(w, http.StatusOK, response)
+	functionalities.WriteJSON(w, http.StatusOK, user)
 }
 
 func (s *Server) GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,11 +31,5 @@ func (s *Server) GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(users)
-	if err != nil {
-		http.Error(w, "Failed to serialize users", http.StatusInternalServerError)
-		return
-	}
-
-	functionalities.WriteJSON(w, http.StatusOK, response)
+	functionalities.WriteJSON(w, http.StatusOK, users)
 }

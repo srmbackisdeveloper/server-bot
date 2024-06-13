@@ -39,7 +39,7 @@ func SendVerificationCodeEmail(to, code string) {
 	m.SetHeader("From", smtpUser)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Necompany - Verification Code")
-	m.SetBody("text/plain", "Here is your verification code: "+code)
+	m.SetBody("text/html", "Dear user,<br/>Here is your verification code: <b>"+code+"</b><br/><br/>	<em>Warning: the code will be expired after 15 minutes.</em>")
 
 	// Sending...
 	if err := d.DialAndSend(m); err != nil {

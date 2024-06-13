@@ -28,6 +28,10 @@ type User struct {
 	IsActive         bool      `json:"isActive"`
 	VerificationCode string    `json:"verificationCode"`
 	CodeValidUntil   time.Time `json:"codeValidUntil"`
+
+	//
+	Token           string    `json:"token"`
+	TokenValidUntil time.Time `json:"tokenValidUntil"`
 }
 
 type Address struct {

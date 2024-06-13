@@ -1,3 +1,4 @@
+// db_queries_auth.go
 package database
 
 import (
@@ -54,4 +55,17 @@ func (s *service) ActivateUser(user *models.User) error {
 		return result.Error
 	}
 	return nil
+}
+
+func (s *service) GetUserByToken(token string) (*models.User, error) {
+	var user models.User
+	result := s.db.Where("token = ? AND token_valid_until > ?", token, time.Now()).First(&user)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		log.Printf("Error fetching user by token: %v\n", result.Error)
+		return nil, result.Error
+	}
+	return &user, nil
 }

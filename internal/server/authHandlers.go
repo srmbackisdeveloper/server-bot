@@ -40,7 +40,6 @@ func (s *Server) AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send the verification code via email (implementation dependent)
 	functionalities.SendVerificationCodeEmail(user.Email, user.VerificationCode)
-
 	functionalities.WriteJSON(w, http.StatusOK, APISuccessMessage{Message: "Verification code sent to your email."})
 }
 
@@ -70,11 +69,19 @@ func (s *Server) AuthVerifyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Code is correct and not expired, activate user
 	user.IsActive = true
+	token, tokenValidUntil := functionalities.GenerateTokenForUser(user)
+	user.Token = token
+	user.TokenValidUntil = tokenValidUntil
 	err = s.db.ActivateUser(user)
 	if err != nil {
 		functionalities.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Failed to activate user"})
 		return
 	}
 
-	functionalities.WriteJSON(w, http.StatusOK, map[string]string{"message": "User verified and activated successfully"})
+	// Send response with token
+	functionalities.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "User verified and activated successfully",
+		"error":   "",
+		"token":   token,
+	})
 }

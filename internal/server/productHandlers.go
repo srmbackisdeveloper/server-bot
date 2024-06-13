@@ -37,13 +37,6 @@ func (s *Server) GetProductHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) AddProductHandler(w http.ResponseWriter, r *http.Request) {
-	providedPassword := r.URL.Query().Get("p")
-
-	if providedPassword != os.Getenv("ACCESS_PASSWORD") {
-		functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Unauthorized"})
-		return
-	}
-	//
 
 	newProd := new(models.Product)
 
