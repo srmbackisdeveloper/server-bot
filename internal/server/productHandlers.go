@@ -51,18 +51,11 @@ func (s *Server) AddProductHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	functionalities.WriteJSON(w, http.StatusOK, APISuccessMessage{Message: "Product added successfully!"})
+	functionalities.WriteJSON(w, http.StatusCreated, APISuccessMessage{Message: "Product added successfully!"})
 }
 
 func (s *Server) DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
-	providedPassword := r.URL.Query().Get("p")
-
-	if providedPassword != os.Getenv("ACCESS_PASSWORD") {
-		functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Unauthorized"})
-		return
-	}
-
-	idString := mux.Vars(r)["id"] // get ID
+	idString := mux.Vars(r)["id"]
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: "invalid id"})
@@ -75,7 +68,7 @@ func (s *Server) DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	functionalities.WriteJSON(w, http.StatusOK, APISuccessMessage{Message: "Product deleted successfully!"})
+	functionalities.WriteJSON(w, http.StatusNoContent, APISuccessMessage{Message: "Product deleted successfully!"})
 }
 
 func (s *Server) UpdateProductHandler(w http.ResponseWriter, r *http.Request) {

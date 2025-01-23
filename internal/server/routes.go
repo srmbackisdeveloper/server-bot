@@ -55,14 +55,17 @@ func SecureMW(s database.Service) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				functionalities.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Missing Authorization header"})
+				// prod:
+				//functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Invalid authorization token"})
+				functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Missing Authorization header"})
 				return
 			}
 
-			// Expecting Authorization header to be in the format "Token <token>"
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != "Token" {
-				functionalities.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid Authorization header format"})
+				// prod:
+				//functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Invalid authorization token"})
+				functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Invalid Authorization header format"})
 				return
 			}
 
@@ -71,11 +74,13 @@ func SecureMW(s database.Service) func(http.Handler) http.Handler {
 			// Verify the token
 			user, err := s.GetUserByToken(token)
 			if err != nil {
-				functionalities.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error"})
+				functionalities.WriteJSON(w, http.StatusInternalServerError, APIServerError{Error: "Internal server error"})
 				return
 			}
 			if user == nil {
-				functionalities.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+				// prod:
+				//functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Invalid authorization token"})
+				functionalities.WriteJSON(w, http.StatusUnauthorized, APIServerError{Error: "Invalid token"})
 				return
 			}
 
